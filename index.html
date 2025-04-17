@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Signalement Voirie</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    input, select, textarea { display: block; margin-bottom: 15px; width: 100%; }
+    button { padding: 10px; background: green; color: white; border: none; }
+  </style>
+</head>
+<body>
+  <h1>📸 Signalement Voirie</h1>
+
+  <label>Le défaut concerne :</label>
+  <select id="section">
+    <option>Section courante</option>
+    <option>Ouvrage d'art</option>
+  </select>
+
+  <label>Type :</label>
+  <select id="type">
+    <option>Défaut de chaussée</option>
+    <option>Défaut de signalisation</option>
+  </select>
+
+  <label>PK :</label>
+  <input type="text" id="pk" value="100">
+
+  <label>Commentaire :</label>
+  <textarea id="commentaire">100</textarea>
+
+  <label>Photo :</label>
+  <input type="file" id="photo" accept="image/*">
+
+  <button onclick="envoyer()">📤 Envoyer</button>
+
+  <script>
+    async function envoyer() {
+      const fichier = document.getElementById('photo').files[0];
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64 = reader.result.split(',')[1];
+        const data = {
+          section: document.getElementById('section').value,
+          type: document.getElementById('type').value,
+          pk: document.getElementById('pk').value,
+          commentaire: document.getElementById('commentaire').value,
+          image: base64
+        };
+
+        const response = await fetch("https://script.google.com/macros/s/AKfycbx0Yhu1ibSeKdX_1xK3WYtGTqVJv02qVG4yRuxQDMFbqZilcUdQf6R0owIjIBxXQzww/exec", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          alert("✅ Signalement envoyé !");
+        } else {
+          alert("❌ Erreur lors de l'envoi");
+        }
+      };
+      if (fichier) reader.readAsDataURL(fichier);
+      else alert("Ajoutez une photo !");
+    }
+  </script>
+</body>
+</html>
